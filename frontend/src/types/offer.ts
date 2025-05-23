@@ -28,4 +28,5 @@ export interface OfferFilters {
   sources?: 'all' | 'adzuna' | 'pole-emploi';
   limit?: number;
   sort_by?: 'date' | 'relevance';
+  page?: number;
 }
