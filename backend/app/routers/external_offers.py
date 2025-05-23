@@ -19,7 +19,8 @@ async def search_external_offers(
     contract_type: Optional[str] = None,
     remote: Optional[bool] = None,
     sources: Optional[str] = "all",  # "all", "adzuna", "pole-emploi"
-    limit: int = 20
+    sort_by: Optional[str] = "date",  # "date", "relevance"
+    limit: int = 50
 ):
     """
     Recherche des offres d'emploi directement auprès des API externes (Pôle Emploi, Adzuna)
@@ -118,6 +119,11 @@ async def search_external_offers(
                 results.append(offer_response)
         except Exception as e:
             print(f"Erreur lors de la recherche sur Pôle Emploi: {str(e)}")
+    
+    # Trier les résultats si demandé
+    if sort_by == "date":
+        # Trier par date de publication (la plus récente en premier)
+        results.sort(key=lambda x: x.posted_at, reverse=True)
     
     # Limiter le nombre de résultats
     return results[:limit]
