@@ -79,14 +79,14 @@ async def search_external_offers(
     if use_pole_emploi:
         try:
             pole_emploi_client = PoleEmploiClient()
-            pole_emploi_response = pole_emploi_client.search_offers(
+            pole_emploi_offers = pole_emploi_client.search_offers(
                 keywords=keywords,
                 location=location,
                 per_page=limit
             )
             
             # Convertir les offres Pôle Emploi en schéma OfferResponse
-            for offer_data in pole_emploi_response.get("resultats", []):
+            for offer_data in pole_emploi_offers:
                 offer_schema = pole_emploi_client.map_to_offer_schema(offer_data)
                 
                 # Filtrer par type de contrat si spécifié

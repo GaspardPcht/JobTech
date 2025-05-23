@@ -18,122 +18,7 @@ class PoleEmploiClient:
     BASE_URL = "https://api.pole-emploi.io/partenaire/offresdemploi/v2"
     AUTH_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=/partenaire"
     
-    def _get_mock_data(self, keywords: Optional[str] = None, location: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Génère des données fictives pour le développement
-        """
-        # Données fictives plus complètes pour simuler les vraies offres de Pôle Emploi
-        mock_results = [
-            {
-                "id": "101",
-                "intitule": "Ingénieur DevOps - France Travail",
-                "description": "Nous recherchons un ingénieur DevOps pour notre équipe technique. Vous serez responsable de la mise en place et de la maintenance de notre infrastructure cloud, ainsi que de l'automatisation des processus de déploiement. Compétences requises: Docker, Kubernetes, AWS, CI/CD, Git.",
-                "entreprise": {"nom": "CloudTech Solutions"},
-                "lieuTravail": {"libelle": location or "Bordeaux"},
-                "typeContrat": "CDI",
-                "salaire": {"libelle": "45000 - 60000 EUR par an"},
-                "dateCreation": "2025-05-20T10:00:00Z",
-                "origineOffre": {"urlOrigine": "https://francetravail.io/offres/101"},
-                "competences": [
-                    {"libelle": "Docker"},
-                    {"libelle": "Kubernetes"},
-                    {"libelle": "AWS"},
-                    {"libelle": "CI/CD"},
-                    {"libelle": "Git"}
-                ]
-            },
-            {
-                "id": "102",
-                "intitule": "Développeur Full Stack JavaScript - France Travail",
-                "description": "Développeur Full Stack pour application web innovante dans le secteur de la fintech. Vous participerez au développement de nouvelles fonctionnalités et à l'amélioration de l'expérience utilisateur. Compétences requises: JavaScript, Node.js, React, MongoDB, Express.",
-                "entreprise": {"nom": "WebSolutions Innovantes"},
-                "lieuTravail": {"libelle": location or "Bordeaux"},
-                "typeContrat": "CDI",
-                "salaire": {"libelle": "40000 - 55000 EUR par an"},
-                "dateCreation": "2025-05-21T14:30:00Z",
-                "origineOffre": {"urlOrigine": "https://francetravail.io/offres/102"},
-                "competences": [
-                    {"libelle": "JavaScript"},
-                    {"libelle": "Node.js"},
-                    {"libelle": "React"},
-                    {"libelle": "MongoDB"},
-                    {"libelle": "Express"}
-                ]
-            },
-            {
-                "id": "103",
-                "intitule": "Data Scientist Senior - France Travail",
-                "description": "Data Scientist expérimenté pour analyse de données complexes et création de modèles prédictifs dans le secteur de la santé. Vous travaillerez sur des projets innovants utilisant l'intelligence artificielle pour améliorer les diagnostics médicaux. Compétences requises: Python, TensorFlow, PyTorch, SQL, Machine Learning.",
-                "entreprise": {"nom": "DataInsight Health"},
-                "lieuTravail": {"libelle": location or "Bordeaux"},
-                "typeContrat": "CDI",
-                "salaire": {"libelle": "50000 - 65000 EUR par an"},
-                "dateCreation": "2025-05-22T09:15:00Z",
-                "origineOffre": {"urlOrigine": "https://francetravail.io/offres/103"},
-                "competences": [
-                    {"libelle": "Python"},
-                    {"libelle": "TensorFlow"},
-                    {"libelle": "PyTorch"},
-                    {"libelle": "SQL"},
-                    {"libelle": "Machine Learning"}
-                ]
-            },
-            {
-                "id": "104",
-                "intitule": "Architecte Cloud - France Travail",
-                "description": "Architecte Cloud pour concevoir et mettre en œuvre des solutions d'infrastructure cloud scalables et sécurisées. Vous serez responsable de la conception de l'architecture technique et de la sélection des technologies appropriées. Compétences requises: AWS, Azure, GCP, Terraform, CloudFormation.",
-                "entreprise": {"nom": "CloudArch Systems"},
-                "lieuTravail": {"libelle": location or "Bordeaux"},
-                "typeContrat": "CDI",
-                "salaire": {"libelle": "55000 - 70000 EUR par an"},
-                "dateCreation": "2025-05-19T11:45:00Z",
-                "origineOffre": {"urlOrigine": "https://francetravail.io/offres/104"},
-                "competences": [
-                    {"libelle": "AWS"},
-                    {"libelle": "Azure"},
-                    {"libelle": "GCP"},
-                    {"libelle": "Terraform"},
-                    {"libelle": "CloudFormation"}
-                ]
-            },
-            {
-                "id": "105",
-                "intitule": "Développeur Mobile React Native - France Travail",
-                "description": "Développeur Mobile pour application cross-platform utilisant React Native. Vous serez responsable du développement et de la maintenance d'applications mobiles pour iOS et Android. Compétences requises: React Native, JavaScript, TypeScript, Redux, Git.",
-                "entreprise": {"nom": "MobileApp Creators"},
-                "lieuTravail": {"libelle": location or "Bordeaux"},
-                "typeContrat": "CDI",
-                "salaire": {"libelle": "40000 - 55000 EUR par an"},
-                "dateCreation": "2025-05-18T15:30:00Z",
-                "origineOffre": {"urlOrigine": "https://francetravail.io/offres/105"},
-                "competences": [
-                    {"libelle": "React Native"},
-                    {"libelle": "JavaScript"},
-                    {"libelle": "TypeScript"},
-                    {"libelle": "Redux"},
-                    {"libelle": "Git"}
-                ]
-            }
-        ]
-        
-        # Filtrer par mots-clés si spécifiés
-        if keywords:
-            keywords_lower = keywords.lower()
-            filtered_results = []
-            for offer in mock_results:
-                # Vérifier si les mots-clés sont dans le titre, la description ou les compétences
-                if keywords_lower in offer["intitule"].lower() or \
-                   keywords_lower in offer["description"].lower() or \
-                   any(keywords_lower in comp["libelle"].lower() for comp in offer["competences"]):
-                    filtered_results.append(offer)
-            mock_results = filtered_results
-        
-        # Ajouter une indication que ce sont des données fictives dans le titre
-        for offer in mock_results:
-            if " - France Travail" not in offer["intitule"]:
-                offer["intitule"] += " - France Travail"
-        
-        return {"resultats": mock_results}
+    # La méthode _get_mock_data a été supprimée car nous utilisons maintenant l'API réelle
     
     def __init__(self):
         """
@@ -235,14 +120,33 @@ class PoleEmploiClient:
                 return []
 
         try:
+            # Limiter le nombre d'offres par page à 50 maximum (limitation de l'API Pôle Emploi)
+            limited_per_page = min(per_page, 50)
+            
             # Construire les paramètres de recherche comme dans l'exemple qui fonctionne
             params = {
                 "motsCles": keywords,
-                "commune": location,
                 "distance": distance,
                 "typeContrat": contract_type,
-                "range": f"{page * per_page}-{(page + 1) * per_page - 1}"
+                "range": f"{page * limited_per_page}-{(page + 1) * limited_per_page - 1}"
             }
+            
+            # Gérer le paramètre de localisation
+            # Si location ressemble à un code INSEE (5 chiffres), l'utiliser comme commune
+            # Sinon, l'utiliser comme département ou mot-clé supplémentaire
+            if location:
+                if location.isdigit() and len(location) == 5:
+                    # C'est un code INSEE
+                    params["commune"] = location
+                elif len(location) == 2 and location.isdigit():
+                    # C'est un code de département
+                    params["departement"] = location
+                else:
+                    # C'est un nom de ville, l'ajouter aux mots-clés
+                    if params["motsCles"]:
+                        params["motsCles"] += f" {location}"
+                    else:
+                        params["motsCles"] = location
             
             # Supprimer les paramètres None
             params = {k: v for k, v in params.items() if v is not None}
