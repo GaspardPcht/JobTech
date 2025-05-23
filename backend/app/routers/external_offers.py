@@ -65,7 +65,7 @@ async def search_external_offers(
                     contract_type=offer_schema.contract_type,
                     remote=offer_schema.remote,
                     url=offer_schema.url,
-                    posted_at=offer_schema.posted_at or datetime.now(),
+                    posted_at=datetime.now(),  # Utiliser la date actuelle car posted_at n'existe pas dans OfferCreate
                     created_at=datetime.now(),
                     updated_at=datetime.now(),
                     techs=[tech for tech in offer_schema.techs] if hasattr(offer_schema, 'techs') else []
@@ -82,7 +82,7 @@ async def search_external_offers(
             pole_emploi_response = pole_emploi_client.search_offers(
                 keywords=keywords,
                 location=location,
-                limit=limit
+                per_page=limit
             )
             
             # Convertir les offres Pôle Emploi en schéma OfferResponse
@@ -109,7 +109,7 @@ async def search_external_offers(
                     contract_type=offer_schema.contract_type,
                     remote=offer_schema.remote,
                     url=offer_schema.url,
-                    posted_at=offer_schema.posted_at or datetime.now(),
+                    posted_at=datetime.now(),  # Utiliser la date actuelle car posted_at n'existe pas dans OfferCreate
                     created_at=datetime.now(),
                     updated_at=datetime.now(),
                     techs=[tech for tech in offer_schema.techs] if hasattr(offer_schema, 'techs') else []
