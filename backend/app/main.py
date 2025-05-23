@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import offers, techs, candidatures, imports
+from app.routers import techs, candidatures
 from app.routers.external_offers import router as external_offers_router
 
 # Création de l'application FastAPI
@@ -21,10 +21,8 @@ app.add_middleware(
 )
 
 # Inclusion des routers
-app.include_router(offers, prefix="/api")
 app.include_router(techs, prefix="/api")
 app.include_router(candidatures, prefix="/api")
-app.include_router(imports, prefix="/api")
 app.include_router(external_offers_router, prefix="/api")
 
 @app.get("/")
