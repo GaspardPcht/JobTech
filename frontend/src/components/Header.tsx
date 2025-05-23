@@ -1,32 +1,50 @@
 import type { FC } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 /**
  * Header component for JobTech Radar application
  * Displays the main navigation and branding
  */
 const Header: FC = () => {
+  const location = useLocation();
+  
+  // Fonction pour déterminer si un lien est actif
+  const isActive = (path: string) => location.pathname === path;
+  
   return (
     <header className="sticky top-0 z-10 bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo and brand name */}
         <div className="flex items-center space-x-2">
-          <span className="text-primary font-bold text-2xl">JobTech Radar</span>
+          <Link to="/" className="text-indigo-600 font-bold text-2xl">JobTech Radar</Link>
         </div>
         
         {/* Main navigation */}
         <nav className="hidden md:flex space-x-6">
-          <a href="/" className="text-textPrimary hover:text-primary transition-colors">
+          <Link 
+            to="/" 
+            className={`${isActive('/') ? 'text-indigo-600 font-medium' : 'text-gray-700'} hover:text-indigo-600 transition-colors`}
+          >
             Accueil
-          </a>
-          <a href="/jobs" className="text-textSecondary hover:text-primary transition-colors">
+          </Link>
+          <Link 
+            to="/jobs" 
+            className={`${isActive('/jobs') ? 'text-indigo-600 font-medium' : 'text-gray-700'} hover:text-indigo-600 transition-colors`}
+          >
             Offres d'emploi
-          </a>
-          <a href="/tech-trends" className="text-textSecondary hover:text-primary transition-colors">
+          </Link>
+          <Link 
+            to="/tech-trends" 
+            className={`${isActive('/tech-trends') ? 'text-indigo-600 font-medium' : 'text-gray-700'} hover:text-indigo-600 transition-colors`}
+          >
             Tendances Tech
-          </a>
-          <a href="/applications" className="text-textSecondary hover:text-primary transition-colors">
+          </Link>
+          <Link 
+            to="/applications" 
+            className={`${isActive('/applications') ? 'text-indigo-600 font-medium' : 'text-gray-700'} hover:text-indigo-600 transition-colors`}
+          >
             Mes candidatures
-          </a>
+          </Link>
         </nav>
         
         {/* User actions */}
