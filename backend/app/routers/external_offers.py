@@ -20,7 +20,8 @@ async def search_external_offers(
     remote: Optional[bool] = None,
     sources: Optional[str] = "all",  # "all", "adzuna", "pole-emploi"
     sort_by: Optional[str] = "date",  # "date", "relevance"
-    limit: int = 50
+    limit: int = 50,
+    page: int = 0
 ):
     """
     Recherche des offres d'emploi directement auprès des API externes (Pôle Emploi, Adzuna)
@@ -39,6 +40,7 @@ async def search_external_offers(
             adzuna_response = adzuna_client.search_offers(
                 keywords=keywords,
                 location=location,
+                page=page + 1,  # Adzuna commence à la page 1
                 per_page=limit
             )
             
@@ -83,6 +85,7 @@ async def search_external_offers(
             pole_emploi_offers = pole_emploi_client.search_offers(
                 keywords=keywords,
                 location=location,
+                page=page,  # Pôle Emploi commence à la page 0
                 per_page=limit
             )
             
