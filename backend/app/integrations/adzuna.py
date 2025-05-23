@@ -129,8 +129,8 @@ class AdzunaClient:
             return response.json()
         except requests.RequestException as e:
             logger.error(f"Erreur lors de la recherche d'offres Adzuna: {str(e)}")
-            # En cas d'erreur, utiliser les données fictives comme fallback
-            return self._get_mock_data(keywords, location)
+            # En cas d'erreur, retourner une liste vide au lieu de données fictives
+            return {"results": []}
     
     def extract_technologies(self, description: str) -> List[TechCreate]:
         """
