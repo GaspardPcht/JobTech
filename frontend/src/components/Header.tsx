@@ -1,6 +1,7 @@
 import type { FC } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
+import useAuth from '../hooks/useAuth';
 
 /**
  * Header component for JobTech Radar application
@@ -8,9 +9,17 @@ import Button from './Button';
  */
 const Header: FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
   
   // Fonction pour déterminer si un lien est actif
   const isActive = (path: string) => location.pathname === path;
+  
+  // Fonction pour gérer la déconnexion
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
   
   return (
     <header className="sticky top-0 z-10 bg-white shadow-sm">
@@ -50,9 +59,25 @@ const Header: FC = () => {
         
         {/* User actions */}
         <div className="flex items-center space-x-4">
-          <Button variant="primary" size="md">
-            Connexion
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <span className="text-gray-700 mr-2">
+                Bonjour, {user?.username}
+              </span>
+              <Button variant="outline" size="md" onClick={handleLogout}>
+                Déconnexion
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="md" onClick={() => navigate('/login')}>
+                Connexion
+              </Button>
+              <Button variant="primary" size="md" onClick={() => navigate('/register')}>
+                S'inscrire
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
