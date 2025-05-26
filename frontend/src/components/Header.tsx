@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import Button from './Button';
 
 /**
  * Header component for JobTech Radar application
@@ -49,9 +50,9 @@ const Header: FC = () => {
         
         {/* User actions */}
         <div className="flex items-center space-x-4">
-          <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+          <Button variant="primary" size="md">
             Connexion
-          </button>
+          </Button>
         </div>
       </div>
     </header>
