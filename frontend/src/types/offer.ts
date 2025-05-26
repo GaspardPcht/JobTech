@@ -29,4 +29,5 @@ export interface OfferFilters {
   limit?: number;
   sort_by?: 'date' | 'relevance';
   page?: number;
+  tech_only?: boolean;
 }

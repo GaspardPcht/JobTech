@@ -6,14 +6,20 @@ interface JobSearchFormProps {
   initialFilters?: OfferFilters;
 }
 
-const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters = {} }) => {
+const JobSearchForm: React.FC<JobSearchFormProps> = ({
+  onSearch,
+  initialFilters = {},
+}) => {
   const [filters, setFilters] = useState<OfferFilters>({
     keywords: initialFilters.keywords || '',
     location: initialFilters.location || '',
     contract_type: initialFilters.contract_type || '',
     remote: initialFilters.remote || false,
     sources: initialFilters.sources || 'all',
-    limit: initialFilters.limit || 50
+    limit: initialFilters.limit || 50,
+    tech_only: initialFilters.tech_only || false,
+    sort_by: initialFilters.sort_by || 'date',
+    page: initialFilters.page || 0,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -21,27 +27,35 @@ const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters 
     onSearch(filters);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       setFilters({
         ...filters,
-        [name]: (e.target as HTMLInputElement).checked
+        [name]: (e.target as HTMLInputElement).checked,
       });
     } else {
       setFilters({
         ...filters,
-        [name]: value
+        [name]: value,
       });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 mb-6">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-lg shadow-md p-6 mb-6"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div>
-          <label htmlFor="keywords" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="keywords"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Mots-clés
           </label>
           <input
@@ -54,9 +68,12 @@ const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters 
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
-        
+
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Localisation
           </label>
           <input
@@ -69,9 +86,12 @@ const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters 
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
-        
+
         <div>
-          <label htmlFor="contract_type" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="contract_type"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Type de contrat
           </label>
           <select
@@ -89,9 +109,12 @@ const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters 
             <option value="Alternance">Alternance</option>
           </select>
         </div>
-        
+
         <div>
-          <label htmlFor="sources" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="sources"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Sources
           </label>
           <select
@@ -107,10 +130,13 @@ const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters 
           </select>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label htmlFor="sort_by" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="sort_by"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Trier par
           </label>
           <select
@@ -118,14 +144,14 @@ const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters 
             name="sort_by"
             value={filters.sort_by || 'date'}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="date">Date (plus récent)</option>
             <option value="relevance">Pertinence</option>
           </select>
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <input
@@ -140,7 +166,7 @@ const JobSearchForm: React.FC<JobSearchFormProps> = ({ onSearch, initialFilters 
             Télétravail uniquement
           </label>
         </div>
-        
+
         <button
           type="submit"
           className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-300"
