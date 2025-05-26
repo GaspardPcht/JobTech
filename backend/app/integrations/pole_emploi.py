@@ -118,22 +118,42 @@ class PoleEmploiClient:
             if not self.access_token:
                 logger.warning("Pas de token d'accès valide, aucune offre ne sera retournée")
                 return []
-
+        
         try:
             # Limiter le nombre d'offres par page à 50 maximum (limitation de l'API Pôle Emploi)
             limited_per_page = min(per_page, 50)
             
-            # Construire les paramètres de recherche comme dans l'exemple qui fonctionne
+            # Préparer les paramètres de recherche
             params = {
-                "motsCles": keywords,
-                "distance": distance,
-                "typeContrat": contract_type,
-                "range": f"{page * limited_per_page}-{(page + 1) * limited_per_page - 1}"
+                "range": f"{page * limited_per_page}-{(page + 1) * limited_per_page - 1}",  # Format: "0-19", "20-39", etc.
+                "sort": 1  # Tri par date de création décroissante
             }
             
-            # Gérer le paramètre de localisation
-            # Si location ressemble à un code INSEE (5 chiffres), l'utiliser comme commune
-            # Sinon, l'utiliser comme département ou mot-clé supplémentaire
+            # Codes ROME spécifiques aux métiers tech
+            tech_rome_codes = [
+                "M1801",  # Administration de systèmes d'information
+                "M1802",  # Expertise et support en systèmes d'information
+                "M1803",  # Direction des systèmes d'information
+                "M1804",  # Etudes et développement de réseaux de télécommunications
+                "M1805",  # Etudes et développement informatique
+                "M1806",  # Conseil et maîtrise d'ouvrage en systèmes d'information
+                "M1810",  # Production et exploitation de systèmes d'information
+                "E1101",  # Animation de site multimédia
+                "E1104",  # Conception de contenus multimédia
+                "E1205",  # Réalisation de contenus multimédia
+                "H1202",  # Conception et dessin de produits électriques et électroniques
+                "H1208",  # Intervention technique en études et conception en automatisme
+                "H1209",  # Intervention technique en études et développement électronique
+                "H1206"   # Management et ingénierie études, recherche et développement industriel
+            ]
+            
+            # Ajouter les codes ROME spécifiques aux métiers tech
+            params["codeROME"] = ",".join(tech_rome_codes)
+            
+            # Ajouter les paramètres optionnels s'ils sont fournis
+            if keywords:
+                params["motsCles"] = keywords
+                
             if location:
                 if location.isdigit() and len(location) == 5:
                     # C'est un code INSEE

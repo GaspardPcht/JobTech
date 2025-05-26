@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .env
+venv
+winsurf-prompt.md
 
 # Editor directories and files
 .vscode/*

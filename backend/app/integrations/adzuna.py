@@ -85,7 +85,7 @@ class AdzunaClient:
         location: Optional[str] = None,
         country: str = "fr",
         distance: Optional[int] = None,
-        category: Optional[str] = None,
+        category: Optional[str] = "it-jobs",  # Catégorie IT par défaut pour filtrer les offres tech
         page: int = 1,
         per_page: int = 20
     ) -> Dict[str, Any]:
