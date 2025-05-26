@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import techs, candidatures
 from app.routers.external_offers import router as external_offers_router
+from app.routers.user import router as auth_router  # Assurez-vous que ce fichier existe
 
 # Création de l'application FastAPI
 app = FastAPI(
@@ -14,7 +15,7 @@ app = FastAPI(
 # Configuration CORS pour permettre les requêtes depuis le frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174"],  # URLs du frontend en développement
+    allow_origins=["*"],  # Autorise toutes les origines en développement
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,6 +25,7 @@ app.add_middleware(
 app.include_router(techs, prefix="/api")
 app.include_router(candidatures, prefix="/api")
 app.include_router(external_offers_router, prefix="/api")
+app.include_router(auth_router)  # Le préfixe est déjà défini dans le routeur
 
 @app.get("/")
 async def root():

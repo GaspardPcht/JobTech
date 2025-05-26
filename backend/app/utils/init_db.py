@@ -4,6 +4,8 @@ import random
 
 from app.database import SessionLocal, engine, Base
 from app.models import Offer, Tech, Candidature, CandidatureStatus
+from app.models.user import User
+from app.utils.security import get_password_hash
 
 def init_db():
     """
@@ -138,6 +140,18 @@ def init_db():
     
     db.add_all(candidatures)
     db.commit()
+    
+    # Création d'un utilisateur de test
+    if db.query(User).count() == 0:
+        test_user = User(
+            email="test@example.com",
+            username="testuser",
+            hashed_password=get_password_hash("password123"),
+            is_active=True
+        )
+        db.add(test_user)
+        db.commit()
+        print("Utilisateur de test créé avec succès !")
     
     db.close()
     print("Base de données initialisée avec succès !")
