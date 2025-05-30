@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status, Depends
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import logging
@@ -9,6 +9,9 @@ logger = logging.getLogger(__name__)
 from app.integrations.adzuna import AdzunaClient
 from app.integrations.pole_emploi import PoleEmploiClient
 from app.schemas.offer import OfferResponse
+from app.services.offer_service import create_or_update_external_offer, get_offer_by_url
+from app.database import get_db
+from sqlalchemy.orm import Session
 
 router = APIRouter(
     prefix="/external-offers",
@@ -26,7 +29,9 @@ async def search_external_offers(
     sort_by: Optional[str] = "date",  # "date", "relevance"
     limit: int = 50,
     page: int = 0,
-    tech_only: bool = True  # Toujours activé par défaut car JobTech est dédié aux offres tech
+    tech_only: bool = True,  # Toujours activé par défaut car JobTech est dédié aux offres tech
+    save_to_db: bool = True,  # Indique si les offres doivent être enregistrées en base de données
+    db: Session = Depends(get_db)
 ):
     # Log des paramètres reçus
     logger.info(f"Paramètres reçus: keywords={keywords}, location={location}, tech_only={tech_only}, page={page}")
@@ -51,21 +56,27 @@ async def search_external_offers(
                 per_page=limit
             )
             
+            logger.info(f"Adzuna: {len(adzuna_response.get('results', []))} offres trouvées")
+            
             # Convertir les offres Adzuna en schéma OfferResponse
             for offer_data in adzuna_response.get("results", []):
-                offer_schema = adzuna_client.map_to_offer_schema(offer_data)
-                
-                # Filtrer par type de contrat si spécifié
-                if contract_type and offer_schema.contract_type != contract_type:
-                    continue
-                
-                # Filtrer par remote si spécifié
-                if remote is not None and offer_schema.remote != remote:
+                try:
+                    offer_schema = adzuna_client.map_to_offer_schema(offer_data)
+                    
+                    # Filtrer par type de contrat si spécifié
+                    if contract_type and offer_schema.contract_type != contract_type:
+                        continue
+                    
+                    # Filtrer par remote si spécifié
+                    if remote is not None and offer_schema.remote != remote:
+                        continue
+                except Exception as e:
+                    logger.error(f"Erreur lors du mapping d'une offre Adzuna: {str(e)}")
                     continue
                 
                 # Convertir en OfferResponse
                 offer_response = OfferResponse(
-                    id=0,  # ID fictif car non stocké en base
+                    id=0,  # ID fictif car non stocké en base (OfferCreate n'a pas d'attribut id)
                     title=offer_schema.title,
                     company=offer_schema.company,
                     location=offer_schema.location,
@@ -96,21 +107,27 @@ async def search_external_offers(
                 per_page=limit
             )
             
+            logger.info(f"Pôle Emploi: {len(pole_emploi_offers)} offres trouvées")
+            
             # Convertir les offres Pôle Emploi en schéma OfferResponse
             for offer_data in pole_emploi_offers:
-                offer_schema = pole_emploi_client.map_to_offer_schema(offer_data)
-                
-                # Filtrer par type de contrat si spécifié
-                if contract_type and offer_schema.contract_type != contract_type:
-                    continue
-                
-                # Filtrer par remote si spécifié
-                if remote is not None and offer_schema.remote != remote:
+                try:
+                    offer_schema = pole_emploi_client.map_to_offer_schema(offer_data)
+                    
+                    # Filtrer par type de contrat si spécifié
+                    if contract_type and offer_schema.contract_type != contract_type:
+                        continue
+                    
+                    # Filtrer par remote si spécifié
+                    if remote is not None and offer_schema.remote != remote:
+                        continue
+                except Exception as e:
+                    logger.error(f"Erreur lors du mapping d'une offre Pôle Emploi: {str(e)}")
                     continue
                 
                 # Convertir en OfferResponse
                 offer_response = OfferResponse(
-                    id=0,  # ID fictif car non stocké en base
+                    id=0,  # ID fictif car non stocké en base (OfferCreate n'a pas d'attribut id)
                     title=offer_schema.title,
                     company=offer_schema.company,
                     location=offer_schema.location,
@@ -298,6 +315,41 @@ async def search_external_offers(
     if sort_by == "date":
         # Trier par date de publication (la plus récente en premier)
         results.sort(key=lambda x: x.posted_at, reverse=True)
+    
+    # Enregistrer les offres en base de données si demandé
+    if save_to_db:
+        logger.info(f"Enregistrement de {len(results)} offres en base de données")
+        saved_results = []
+        for offer in results:
+            try:
+                # Vérifier si l'offre existe déjà par son URL
+                if not offer.url:  # Ignorer les offres sans URL
+                    logger.warning(f"Offre ignorée (pas d'URL): {offer.title}")
+                    continue
+                    
+                existing_offer = get_offer_by_url(db, offer.url)
+                
+                if existing_offer:
+                    logger.info(f"Offre déjà existante en base: {offer.title} - {offer.url}")
+                    saved_results.append(existing_offer)
+                else:
+                    # Convertir l'offre en dictionnaire pour l'enregistrement
+                    offer_dict = offer.dict()
+                    # Supprimer l'id car il sera généré automatiquement
+                    if 'id' in offer_dict and offer_dict['id'] == 0:
+                        del offer_dict['id']
+                    
+                    # Créer l'offre en base de données
+                    db_offer = create_or_update_external_offer(db, offer_dict)
+                    logger.info(f"Offre enregistrée en base: {offer.title} - ID: {db_offer.id}")
+                    saved_results.append(db_offer)
+            except Exception as e:
+                logger.error(f"Erreur lors du traitement de l'offre {offer.title}: {str(e)}")
+                # Continuer avec l'offre suivante
+                continue
+        
+        # Utiliser les offres enregistrées comme résultat
+        results = saved_results
     
     # Limiter le nombre de résultats
     return results[:limit]

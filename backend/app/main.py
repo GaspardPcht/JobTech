@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import techs, candidatures
 from app.routers.external_offers import router as external_offers_router
 from app.routers.user import router as auth_router  # Assurez-vous que ce fichier existe
+from app.routers.tech_extraction import router as tech_extraction_router
 
 # Création de l'application FastAPI
 app = FastAPI(
@@ -25,6 +26,7 @@ app.add_middleware(
 app.include_router(techs, prefix="/api")
 app.include_router(candidatures, prefix="/api")
 app.include_router(external_offers_router, prefix="/api")
+app.include_router(tech_extraction_router, prefix="/api")
 app.include_router(auth_router)  # Le préfixe est déjà défini dans le routeur
 
 @app.get("/")

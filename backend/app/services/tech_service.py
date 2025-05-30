@@ -5,6 +5,16 @@ from typing import List, Optional, Dict, Any, Tuple
 from app.models import Tech, Offer, offer_tech
 from app.schemas.tech import TechCreate, TechUpdate, TechTrend
 
+# Fonction au niveau du module pour être facilement importable
+def get_techs_by_ids(db: Session, tech_ids: List[int]) -> List[Tech]:
+    """
+    Récupère une liste de technologies par leurs IDs
+    """
+    if not tech_ids:
+        return []
+        
+    return db.query(Tech).filter(Tech.id.in_(tech_ids)).all()
+
 class TechService:
     """
     Service pour gérer les opérations liées aux technologies
@@ -104,18 +114,18 @@ class TechService:
         if total_offers == 0:
             return []
         
-        # Requête pour compter le nombre d'offres par technologie
+        # Requête pour compter le nombre d'offres par technologie avec des relations explicites
         tech_counts = db.query(
             Tech.id,
             Tech.name,
             Tech.category,
             func.count(Offer.id).label("count")
+        ).select_from(Tech).join(
+            offer_tech, Tech.id == offer_tech.c.tech_id
         ).join(
-            offer_tech
-        ).join(
-            Offer
+            Offer, Offer.id == offer_tech.c.offer_id
         ).group_by(
-            Tech.id
+            Tech.id, Tech.name, Tech.category
         ).order_by(
             desc("count")
         ).limit(limit).all()
@@ -141,12 +151,22 @@ class TechService:
         return db.query(
             Tech,
             func.count(Offer.id).label("offer_count")
+        ).select_from(Tech).outerjoin(
+            offer_tech, Tech.id == offer_tech.c.tech_id
         ).outerjoin(
-            offer_tech
-        ).outerjoin(
-            Offer
+            Offer, Offer.id == offer_tech.c.offer_id
         ).group_by(
-            Tech.id
+            Tech.id, Tech.name, Tech.category
         ).order_by(
             desc("offer_count")
         ).all()
+        
+    @staticmethod
+    def get_techs_by_ids(db: Session, tech_ids: List[int]) -> List[Tech]:
+        """
+        Récupère une liste de technologies par leurs IDs
+        """
+        if not tech_ids:
+            return []
+            
+        return db.query(Tech).filter(Tech.id.in_(tech_ids)).all()
