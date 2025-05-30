@@ -16,7 +16,7 @@ app = FastAPI(
 # Configuration CORS pour permettre les requêtes depuis le frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Autorise toutes les origines en développement
+    allow_origins=["http://localhost:5173"],  # Origine spécifique du frontend Vite
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
