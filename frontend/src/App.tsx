@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import JobsPage from './pages/JobsPage'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import TechTrendsPage from './pages/TechTrendsPage'
 import { AuthProvider } from './contexts/AuthProvider'
 
 // Créer une instance de QueryClient pour react-query
@@ -25,6 +26,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/jobs" element={<JobsPage />} />
+                <Route path="/tech-trends" element={<TechTrendsPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
               </Routes>
