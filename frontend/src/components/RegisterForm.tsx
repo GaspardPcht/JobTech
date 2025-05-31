@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import Button from './Button';
+import { IoEye, IoEyeOff } from 'react-icons/io5';
 
 const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +9,8 @@ const RegisterForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const { register, error, loading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,15 +70,26 @@ const RegisterForm: React.FC = () => {
           <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">
             Mot de passe
           </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
-            minLength={8}
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={isPasswordVisible ? "text" : "password"}
+              value={password}
+              placeholder="Mot de passe"
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+              minLength={8}
+            />
+            <div 
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" 
+              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+            >
+              {isPasswordVisible ? 
+                <IoEye className="text-gray-500 text-xl" /> : 
+                <IoEyeOff className="text-gray-500 text-xl" />}
+            </div>
+          </div>
           <p className="text-xs text-gray-500 mt-1">Le mot de passe doit contenir au moins 8 caractères</p>
         </div>
         
@@ -83,14 +97,25 @@ const RegisterForm: React.FC = () => {
           <label htmlFor="confirmPassword" className="block text-gray-700 text-sm font-medium mb-2">
             Confirmer le mot de passe
           </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
-          />
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              type={isConfirmPasswordVisible ? "text" : "password"}
+              value={confirmPassword}
+              placeholder="Confirmer le mot de passe"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+            <div 
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" 
+              onClick={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
+            >
+              {isConfirmPasswordVisible ? 
+                <IoEye className="text-gray-500 text-xl" /> : 
+                <IoEyeOff className="text-gray-500 text-xl" />}
+            </div>
+          </div>
           {passwordError && (
             <p className="text-xs text-red-500 mt-1">{passwordError}</p>
           )}

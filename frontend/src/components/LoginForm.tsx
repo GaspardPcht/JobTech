@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import Button from './Button';
+import { IoEyeOff, IoEye } from 'react-icons/io5';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, error, loading } = useAuth();
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +33,7 @@ const LoginForm: React.FC = () => {
             id="email"
             type="email"
             value={email}
+            placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
@@ -41,14 +44,25 @@ const LoginForm: React.FC = () => {
           <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">
             Mot de passe
           </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={isPasswordVisible ? "text" : "password"}
+              value={password}
+              placeholder="Mot de passe"
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+            <div 
+              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" 
+              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+            >
+              {isPasswordVisible ? 
+                <IoEye className="text-gray-500 text-xl" /> : 
+                <IoEyeOff className="text-gray-500 text-xl" />}
+            </div>
+          </div>
         </div>
         
         <Button 

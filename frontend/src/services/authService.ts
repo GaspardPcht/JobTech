@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Utilisez le port configuré ou 8080 par défaut
-const API_PORT = import.meta.env.VITE_API_PORT || '8080';
+// Utilisez le port configuré ou 8000 par défaut
+const API_PORT = import.meta.env.VITE_API_PORT || '8000';
 const API_URL = `http://localhost:${API_PORT}/api/auth`;
 
 // Types
@@ -37,7 +37,6 @@ const authService = {
    * Inscription d'un nouvel utilisateur
    */
   register: async (userData: UserRegister): Promise<User> => {
-    console.log('Données envoyées pour inscription:', userData);
     
     // Utiliser le format JSON standard pour l'inscription
     try {

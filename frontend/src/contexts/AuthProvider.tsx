@@ -57,7 +57,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      console.log('Données d\'inscription envoyées:', { email, username, password });
       await authService.register({ email, username, password });
       // Connexion automatique après inscription
       await login(email, password);
