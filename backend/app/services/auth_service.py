@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from app.models.user import User
+from app.models.user_login import UserLogin
 from app.schemas.user import UserCreate, Token
 from app.utils.security import (
     verify_password, 
@@ -42,9 +43,10 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     return user
 
 
-def create_user(db: Session, user_create: UserCreate) -> User:
+def create_user(db: Session, user_create: UserCreate) -> tuple[User, str]:
     """
-    Crée un nouvel utilisateur
+    Crée un nouvel utilisateur et génère un token JWT
+    Retourne l'utilisateur créé et le token d'accès
     """
     try:
         print(f"Tentative de création d'utilisateur avec: {user_create.dict()}")
@@ -72,7 +74,8 @@ def create_user(db: Session, user_create: UserCreate) -> User:
         db_user = User(
             email=user_create.email,
             username=user_create.username,
-            hashed_password=hashed_password
+            hashed_password=hashed_password,
+            role="user"  # Par défaut, tous les nouveaux utilisateurs ont le rôle 'user'
         )
         
         # Ajoute l'utilisateur à la base de données
@@ -80,16 +83,24 @@ def create_user(db: Session, user_create: UserCreate) -> User:
         db.commit()
         db.refresh(db_user)
         
+        # Génère un token JWT pour le nouvel utilisateur
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": db_user.email, "role": db_user.role},
+            expires_delta=access_token_expires
+        )
+        
         print(f"Utilisateur créé avec succès: {db_user.email}")
-        return db_user
+        return db_user, access_token
     except Exception as e:
         print(f"Erreur lors de la création de l'utilisateur: {str(e)}")
         raise
 
 
-def login_user(db: Session, email: str, password: str) -> Token:
+def login_user(db: Session, email: str, password: str, ip_address: str = None, user_agent: str = None) -> Token:
     """
     Connecte un utilisateur et génère un token JWT
+    Enregistre également les informations de connexion
     """
     user = authenticate_user(db, email, password)
     
@@ -100,10 +111,19 @@ def login_user(db: Session, email: str, password: str) -> Token:
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Crée un token JWT avec une durée d'expiration
+    # Enregistrer la connexion dans la base de données
+    user_login = UserLogin(
+        user_id=user.id,
+        ip_address=ip_address,
+        user_agent=user_agent
+    )
+    db.add(user_login)
+    db.commit()
+    
+    # Crée un token JWT avec une durée d'expiration et le rôle de l'utilisateur
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email},
+        data={"sub": user.email, "role": user.role},
         expires_delta=access_token_expires
     )
     

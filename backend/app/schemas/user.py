@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime
 
 
@@ -40,6 +40,12 @@ class UserResponse(UserBase):
         orm_mode = True  # Pour la compatibilité avec les anciennes versions de Pydantic
 
 
+class UserRegisterResponse(UserResponse):
+    """Schéma pour la réponse après inscription d'un utilisateur, incluant un token"""
+    access_token: str
+    token_type: str
+
+
 class Token(BaseModel):
     """Schéma pour le token d'authentification"""
     access_token: str
@@ -49,4 +55,5 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     """Schéma pour les données contenues dans le token"""
     email: Optional[str] = None
-    exp: Optional[datetime] = None
+    exp: Optional[Union[datetime, str]] = None
+    role: Optional[str] = "user"  # Par défaut, tous les utilisateurs ont le rôle 'user'

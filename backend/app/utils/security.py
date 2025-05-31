@@ -71,11 +71,12 @@ async def get_current_user(
         # Décode le token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
+        role: str = payload.get("role", "user")  # Récupère le rôle, par défaut 'user'
         
         if email is None:
             raise credentials_exception
         
-        token_data = TokenData(email=email)
+        token_data = TokenData(email=email, role=role)
     except jwt.JWTError:
         raise credentials_exception
     
@@ -84,6 +85,13 @@ async def get_current_user(
     
     if user is None:
         raise credentials_exception
+    
+    # Vérifie que le rôle dans le token correspond au rôle en base de données
+    # Si ce n'est pas le cas, on met à jour le rôle dans le token avec celui de la base
+    if user.role != token_data.role:
+        # Note: Dans une application de production, on pourrait vouloir invalider le token ici
+        # et forcer l'utilisateur à se reconnecter. Pour simplifier, on continue avec le rôle de la base.
+        pass
     
     return user
 
