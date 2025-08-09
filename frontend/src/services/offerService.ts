@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Offer, OfferFilters } from '../types/offer';
 
 // Utiliser l'URL de l'API depuis le fichier .env
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 /**
  * Récupère les offres d'emploi en temps réel depuis les API externes
